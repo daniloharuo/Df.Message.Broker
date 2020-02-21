@@ -1,32 +1,22 @@
 ﻿using System;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Df.Message.Broker.ServiceBus.Contracts;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
 
 namespace Df.Message.Broker.ServiceBus
 {
-    public class Publisher
+    public class Publisher<T> : IPublisher<T> where T : class
     {
-        private string _serviceBusConnectionString = "Endpoint=sb://dfmessage.servicebus.windows.net/;SharedAccessKeyName=meu_token;SharedAccessKey=+JWuf875RyazD1Cj8/ezM49LiPk08c+B0lm/I4nqx98=";
-        private string _topicName = "df.magalu.challenge";
         private static ITopicClient topicClient;
 
         public Publisher(string serviceBusConnectionString, string topicName)
         {
-            topicClient = new TopicClient(_serviceBusConnectionString, _topicName);
+            topicClient = new TopicClient(serviceBusConnectionString, topicName);
         }
 
-        public async Task StartTest()
-        {
-
-            var objectTest = new { Version = Environment.Version, ProjectName = Assembly.GetCallingAssembly().GetName().Name };
-            await SendMessagesAsync(objectTest);
-
-        }
-
-        public async Task SendMessagesAsync(object messageObject)
+        public async Task SendMessagesAsync(T messageObject)
         {
             try
             {
@@ -47,4 +37,5 @@ namespace Df.Message.Broker.ServiceBus
             }
         }
     }
+
 }
