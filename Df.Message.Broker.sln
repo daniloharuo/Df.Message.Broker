@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Df.Message.Broker.ServiceBus", "Df.Message.Broker.ServiceBus\Df.Message.Broker.ServiceBus.csproj", "{213FCE12-E123-4A35-AA00-3454B31C252A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Df.Sample", "Df.Sample\Df.Sample.csproj", "{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{213FCE12-E123-4A35-AA00-3454B31C252A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{213FCE12-E123-4A35-AA00-3454B31C252A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{213FCE12-E123-4A35-AA00-3454B31C252A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{213FCE12-E123-4A35-AA00-3454B31C252A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
