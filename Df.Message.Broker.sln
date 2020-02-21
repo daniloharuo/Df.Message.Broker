@@ -1,9 +1,12 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Df.Message.Broker.ServiceBus", "Df.Message.Broker.ServiceBus\Df.Message.Broker.ServiceBus.csproj", "{213FCE12-E123-4A35-AA00-3454B31C252A}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Df.Message.Broker.ServiceBus", "Df.Message.Broker.ServiceBus\Df.Message.Broker.ServiceBus.csproj", "{213FCE12-E123-4A35-AA00-3454B31C252A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Df.Sample", "Df.Sample\Df.Sample.csproj", "{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Df.Sample", "Df.Sample\Df.Sample.csproj", "{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Df.Message.Broker.ServiceBus.Standard", "Df.Message.Broker.ServiceBus.Standard\Df.Message.Broker.ServiceBus.Standard.csproj", "{FC81BE86-2304-41DD-9DB9-181DDB74103A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,5 +22,15 @@ Global
 		{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89CAB96A-5EEC-450D-AFE1-7982CFFC2706}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC81BE86-2304-41DD-9DB9-181DDB74103A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC81BE86-2304-41DD-9DB9-181DDB74103A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC81BE86-2304-41DD-9DB9-181DDB74103A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC81BE86-2304-41DD-9DB9-181DDB74103A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C5705F2C-1280-4E30-9F27-44DB9A786913}
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,6 @@
-﻿using Microsoft.Azure.ServiceBus;
+﻿using Df.Message.Broker.ServiceBus.Standard.Contracts;
+using Jil;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Management;
 using System;
 using System.Reflection;
@@ -6,9 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Df.Message.Broker.ServiceBus
+namespace Df.Message.Broker.ServiceBus.Standard
 {
-    public class Consumer
+    public class Consumer : IConsumer
     {
         private static ISubscriptionClient _subscriptionClient;
         private readonly string _subscriptionName = Assembly.GetCallingAssembly().GetName().Name;
@@ -24,21 +26,25 @@ namespace Df.Message.Broker.ServiceBus
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
             {
                 MaxConcurrentCalls = 1,
-
-                AutoComplete = false
+                AutoComplete = false,
             };
+            Func<string, string> func = str => str.ToUpper();
 
-            _subscriptionClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
+            _subscriptionClient.RegisterMessageHandler(async (message, token) =>
+            {
+                await ProcessMessagesAsync(message, token, func);
+            });
         }
-
-        public async Task ProcessMessagesAsync(Microsoft.Azure.ServiceBus.Message message, CancellationToken token)
+        public async Task ProcessMessagesAsync(Microsoft.Azure.ServiceBus.Message message, CancellationToken token, Func<string, string> func)
         {
 
             string messageRecipt = Encoding.UTF8.GetString(message.Body);
 
             Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{messageRecipt}");
 
-            //string messageBody = JSON.Deserialize<T>(message.Body);
+
+            //service.process(param);
+            //var DynamicObject = JSON.Deserialize<T>(messageRecipt);
 
             await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken);
         }

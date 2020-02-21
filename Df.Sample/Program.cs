@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Df.Message.Broker.ServiceBus;
+using Df.Message.Broker.ServiceBus.Contracts;
+using System;
 using System.Reflection;
-using Df.Message.Broker.ServiceBus;
 
 namespace Df.Sample
 {
@@ -11,6 +12,7 @@ namespace Df.Sample
         static void Main(string[] args)
         {
 
+            //Publisher();
             Consume();
 
         }
@@ -36,8 +38,10 @@ namespace Df.Sample
             try
             {
                 Teste teste = new Teste();
-                var publisher = new Publisher<Teste>(serviceBusConnectionString, topicName);
+                IPublisher publisher = new Publisher(serviceBusConnectionString, topicName);
                 publisher.SendMessagesAsync(teste).GetAwaiter().GetResult();
+                Console.WriteLine("Enviado!");
+
             }
             catch (Exception ex)
             {
@@ -47,14 +51,13 @@ namespace Df.Sample
 
         public class Teste
         {
-            public string Version{get;private set;}
-            public string ProjectName {get;private set;}
+            public string Version { get; private set; }
+            public string ProjectName { get; private set; }
             public Teste()
             {
                 Version = Environment.Version.ToString();
                 ProjectName = Assembly.GetCallingAssembly().GetName().Name;
-            }    
-        }    
-
+            }
+        }
     }
 }

@@ -1,13 +1,13 @@
-﻿using Df.Message.Broker.ServiceBus.Contracts;
+﻿using Df.Message.Broker.ServiceBus.Standard.Contracts;
 using Jil;
 using Microsoft.Azure.ServiceBus;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Df.Message.Broker.ServiceBus
+namespace Df.Message.Broker.ServiceBus.Standard
 {
-    public class Publisher : IPublisher
+    public class Publisher  : IPublisher
     {
         private static ITopicClient topicClient;
 
@@ -32,10 +32,6 @@ namespace Df.Message.Broker.ServiceBus
             catch (Exception exception)
             {
                 Console.WriteLine($"{DateTime.Now} :: Exception: {exception.Message}");
-            }
-            finally
-            {
-                await topicClient.CloseAsync();
             }
         }
     }
