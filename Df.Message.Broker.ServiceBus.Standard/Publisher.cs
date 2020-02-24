@@ -2,6 +2,8 @@
 using Jil;
 using Microsoft.Azure.ServiceBus;
 using System;
+using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,6 +15,8 @@ namespace Df.Message.Broker.ServiceBus.Standard
 
         public Publisher(string serviceBusConnectionString, string topicName)
         {
+            Console.WriteLine("publisher version: " + "0.08");
+
             topicClient = new TopicClient(serviceBusConnectionString, topicName);
         }
 
@@ -34,5 +38,6 @@ namespace Df.Message.Broker.ServiceBus.Standard
                 Console.WriteLine($"{DateTime.Now} :: Exception: {exception.Message}");
             }
         }
+
     }
 }
