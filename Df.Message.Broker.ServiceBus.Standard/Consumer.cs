@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Df.Message.Broker.ServiceBus.Standard
 {
-    public class Consumer : IConsumer
+    public class Consumer //: IConsumer
     {
         private static ISubscriptionClient _subscriptionClient;
         private readonly string _subscriptionName = Assembly.GetCallingAssembly().GetName().Name;
@@ -21,21 +21,19 @@ namespace Df.Message.Broker.ServiceBus.Standard
             _subscriptionClient = new SubscriptionClient(serviceBusConnectionString, topicName, _subscriptionName);
         }
 
-        public void RegisterOnMessageHandlerAndReceiveMessages()
+        public void RegisterOnMessageHandlerAndReceiveMessages(Func<Task> func)
         {
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
             {
                 MaxConcurrentCalls = 1,
                 AutoComplete = false,
             };
-            Func<string, string> func = str => str.ToUpper();
+            Func<Microsoft.Azure.ServiceBus.Message, CancellationToken, Task> Input  = null;
+            Func<ExceptionReceivedEventArgs, System.Threading.Tasks.Task> ErrorInPut = null;
 
-            _subscriptionClient.RegisterMessageHandler(async (message, token) =>
-            {
-                await ProcessMessagesAsync(message, token, func);
-            });
+            _subscriptionClient.RegisterMessageHandler(Input,ErrorInPut);         
         }
-        public async Task ProcessMessagesAsync(Microsoft.Azure.ServiceBus.Message message, CancellationToken token, Func<string, string> func)
+        public async Task ProcessMessagesAsync(Microsoft.Azure.ServiceBus.Message message, CancellationToken cancellationToken, Task task)
         {
 
             string messageRecipt = Encoding.UTF8.GetString(message.Body);
