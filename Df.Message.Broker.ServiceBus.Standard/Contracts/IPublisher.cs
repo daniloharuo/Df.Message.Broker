@@ -1,9 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using Df.Message.Broker.ServiceBus.Standard.Contracts.Config;
+using System.Threading.Tasks;
 
 namespace Df.Message.Broker.ServiceBus.Standard.Contracts
 {
     public interface IPublisher
     {
-        Task SendMessagesAsync<T>(T messageObject) where T : class;
+        void Register<T>(IConfigManager configManager)
+                    where T : class;
+
+        Task SendMessagesAsync<T>(T messageObject)
+                    where T : class;
     }
 }
