@@ -8,6 +8,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Df.Message.Broker.ServiceBu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Df.Message.Broker", "Df.Message.Broker\Df.Message.Broker.csproj", "{08F45E75-9F90-4429-8A1D-181AD07162DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Df.Message.Broker.RabbitMq.Standard", "Df.Message.Broker.RabbitMq.Standard\Df.Message.Broker.RabbitMq.Standard.csproj", "{12E7F882-2590-4C87-BF94-7706EFC19728}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{08F45E75-9F90-4429-8A1D-181AD07162DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08F45E75-9F90-4429-8A1D-181AD07162DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08F45E75-9F90-4429-8A1D-181AD07162DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12E7F882-2590-4C87-BF94-7706EFC19728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12E7F882-2590-4C87-BF94-7706EFC19728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12E7F882-2590-4C87-BF94-7706EFC19728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12E7F882-2590-4C87-BF94-7706EFC19728}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
