@@ -1,4 +1,4 @@
-﻿using Df.Message.Broker.ServiceBus.Standard.Contracts.Config;
+﻿using Df.Message.Broker.Contracts.Config;
 using Microsoft.Azure.ServiceBus;
 using System;
 using System.Threading.Tasks;

@@ -1,5 +1,5 @@
-﻿using Df.Message.Broker.ServiceBus.Standard.Contracts;
-using Df.Message.Broker.ServiceBus.Standard.Contracts.Config;
+﻿using Df.Message.Broker.Contracts;
+using Df.Message.Broker.Contracts.Config;
 using Jil;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Management;

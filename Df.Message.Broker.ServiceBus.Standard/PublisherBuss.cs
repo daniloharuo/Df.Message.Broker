@@ -1,5 +1,5 @@
-﻿using Df.Message.Broker.ServiceBus.Standard.Contracts;
-using Df.Message.Broker.ServiceBus.Standard.Contracts.Config;
+﻿using Df.Message.Broker.Contracts;
+using Df.Message.Broker.Contracts.Config;
 using Jil;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.ServiceBus;
@@ -12,23 +12,24 @@ namespace Df.Message.Broker.ServiceBus.Standard
 {
     public class PublisherBuss : IPublisher
     {
-        private static ITopicClient topicClient;
+        private static ITopicClient _topicClient;
         private IConfigManager _configManager;
-        private Dictionary<Type, ITopicClient> topicClients;
+        private Dictionary<Type, ITopicClient> _topicClients;
 
         public PublisherBuss()
         {
-            topicClients = new Dictionary<Type, ITopicClient>();
+            _topicClients = new Dictionary<Type, ITopicClient>();
         }
+
         public void Register<T>(IConfigManager configManager) where T : class
         {
             _configManager = configManager;
             CreateTopic();
-            topicClient = new TopicClient(configManager.ServiceBusConnectionString, configManager.TopicName);
+            _topicClient = new TopicClient(configManager.ServiceBusConnectionString, configManager.TopicName);
 
-            if (!topicClients.ContainsKey(typeof(T)))
+            if (!_topicClients.ContainsKey(typeof(T)))
             {
-                topicClients.Add(typeof(T), topicClient);
+                _topicClients.Add(typeof(T), _topicClient);
             }
         }
 
@@ -41,11 +42,11 @@ namespace Df.Message.Broker.ServiceBus.Standard
 
                 string messageBody = JSON.SerializeDynamic(messageObject);
 
-                Console.WriteLine(messageBody);
+                Console.WriteLine($"Body message is: {messageBody}");
 
                 var message = new Microsoft.Azure.ServiceBus.Message(Encoding.UTF8.GetBytes(messageBody));
 
-                await topicClients[typeof(T)].SendAsync(message);
+                await _topicClients[typeof(T)].SendAsync(message);
             }
             catch (Exception ex)
             {
@@ -56,7 +57,7 @@ namespace Df.Message.Broker.ServiceBus.Standard
 
         public void ValidateRegister<T>() where T : class
         {
-            if (!topicClients.ContainsKey(typeof(T)))
+            if (!_topicClients.ContainsKey(typeof(T)))
             {
                 throw new Exception("Topic was not registered");
             }

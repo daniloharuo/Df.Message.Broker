@@ -1,63 +1,48 @@
-﻿using Df.Message.Broker.ServiceBus;
-using Df.Message.Broker.ServiceBus.Contracts;
+﻿using Df.Message.Broker.Contracts;
+using Df.Message.Broker.Contracts.Config;
+using Df.Message.Broker.ServiceBus.Standard;
+using Df.Message.Broker.ServiceBus.Standard.Config;
+using Df.Sample.Model;
+using Newtonsoft.Json;
 using System;
-using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Df.Sample
 {
     class Program
     {
-        const string serviceBusConnectionString = "Endpoint=sb://dfmessage.servicebus.windows.net/;SharedAccessKeyName=meu_token;SharedAccessKey=+JWuf875RyazD1Cj8/ezM49LiPk08c+B0lm/I4nqx98=";
-        const string topicName = "df.magalu.challenge";
+        private const string _serviceBusConnectionString = "Endpoint=sb://dfmessage.servicebus.windows.net/;SharedAccessKeyName=meu_token;SharedAccessKey=+JWuf875RyazD1Cj8/ezM49LiPk08c+B0lm/I4nqx98=";
+        private const string _topicName = "df.magalu.challenge";
+
         static void Main(string[] args)
         {
-
-            //Publisher();
+            Publisher();
             Consume();
-
         }
-
 
         public static void Consume()
         {
+            IConsumer consumer = new ConsumerBuss();
+            IConfigManager configManager = new ConfigManagerBuss(_serviceBusConnectionString, _topicName);
+            consumer.Register(configManager);
+            consumer.ReceiveMessages<Test>(async (test) => await ProcessEvent(test));
+            Console.ReadKey();
+        }
 
-            Consumer consumer = new Consumer(serviceBusConnectionString, topicName);
-            try
-            {
-                consumer.RegisterOnMessageHandlerAndReceiveMessages();
-                Console.ReadKey();
-            }
-            catch (Exception ex)
-            {
-                Console.Write(ex.Message);
-            }
+        public static async Task ProcessEvent(Test test)
+        {
+            Console.WriteLine("Event Recived: " + JsonConvert.SerializeObject(test));
+            return;
         }
 
         public static void Publisher()
         {
-            try
-            {
-                Teste teste = new Teste();
-                IPublisher publisher = new Publisher(serviceBusConnectionString, topicName);
-                publisher.SendMessagesAsync(teste).GetAwaiter().GetResult();
-                Console.WriteLine("Enviado!");
-
-            }
-            catch (Exception ex)
-            {
-                Console.Write(ex.Message);
-            }
-        }
-
-        public class Teste
-        {
-            public string Version { get; private set; }
-            public string ProjectName { get; private set; }
-            public Teste()
-            {
-                Version = Environment.Version.ToString();
-                ProjectName = Assembly.GetCallingAssembly().GetName().Name;
-            }
+            Test test = new Test();
+            IConfigManager configManager = new ConfigManagerBuss(_serviceBusConnectionString, _topicName);
+            IPublisher publisher = new PublisherBuss();
+            publisher.Register<Test>(configManager);
+            publisher.SendMessagesAsync(test).GetAwaiter().GetResult();
+            Console.WriteLine("Sended!");
         }
     }
 }

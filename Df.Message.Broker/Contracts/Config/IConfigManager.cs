@@ -1,4 +1,8 @@
-﻿namespace Df.Message.Broker.ServiceBus.Standard.Contracts.Config
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Df.Message.Broker.Contracts.Config
 {
     public interface IConfigManager
     {

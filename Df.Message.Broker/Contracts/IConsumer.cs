@@ -1,8 +1,10 @@
-﻿using Df.Message.Broker.ServiceBus.Standard.Contracts.Config;
+﻿using Df.Message.Broker.Contracts.Config;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Df.Message.Broker.ServiceBus.Standard.Contracts
+namespace Df.Message.Broker.Contracts
 {
     public interface IConsumer
     {
