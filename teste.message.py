@@ -9,14 +9,14 @@ topic_name= 'df.magalu.challenge'
 consumer_name = 'teste_python_bolado'
 
  
-for i in range(2):
-    msg = Message('Msg {0}'.format(i).encode('utf-8'),
+for i in range(1):
+    msg = Message('nova Msg {0}'.format(i).encode('utf-8'),
     custom_properties={'messageposition': i})
     bus_service.send_topic_message(topic_name, msg)
     print("enviada! ",i)
     
 
-bus_service.create_subscription(topic_name, consumer_name)
-while True:
-    msg = bus_service.receive_subscription_message(topic_name, consumer_name, peek_lock=False)
-    print(msg.body)
+# bus_service.create_subscription(topic_name, consumer_name)
+# while True:
+#     msg = bus_service.receive_subscription_message(topic_name, consumer_name, peek_lock=False)
+#     print(msg.body)
