@@ -14,12 +14,12 @@ using System.Threading.Tasks;
 
 namespace Df.Message.Broker.ServiceBus.Standard
 {
-    public class ConsumerBuss : IConsumer
+    public class ConsumerTopicBuss : IConsumer
     {
         private static ISubscriptionClient _subscriptionClient;
+        private IConfigManager _configManager;
         private string _subscriptionName;
         private MessageHandlerOptions _messageHandlerOptions;
-        private IConfigManager _configManager;
 
         public void Register(IConfigManager configManager)
         {
@@ -30,13 +30,11 @@ namespace Df.Message.Broker.ServiceBus.Standard
             Console.WriteLine("Registered with Success");
         }
 
-        public void ReceiveMessages<T>(Func<T, Task> func) where T : class
+        public void ReceiveMessages<T>(Func<T, Task> func, Func<ExceptionReceivedEventArgs, Task>? exeptionRecived = null) where T : class
         {
-            _messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
-            {
-                MaxConcurrentCalls = _configManager.MaxConcurrentCalls,
-                AutoComplete = _configManager.AutoComplete,
-            };
+
+            exeptionRecived = ValidateExceptionRecived(exeptionRecived);
+            CreateMessageHandlerOptions(exeptionRecived);
 
             Func<Microsoft.Azure.ServiceBus.Message, CancellationToken, Task> Input = async (message, cancellationToken) =>
             {
@@ -45,24 +43,22 @@ namespace Df.Message.Broker.ServiceBus.Standard
 
             _subscriptionClient.RegisterMessageHandler(Input, _messageHandlerOptions);
         }
-        public void ReceiveMessagesGzip<T>(Func<T, Task> func) where T : class
+
+        public void ReceiveMessagesGzip<T>(Func<T, Task> func,Func<ExceptionReceivedEventArgs, Task>? exeptionRecived = null) where T : class
         {
-            var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
-            {
-                MaxConcurrentCalls = _configManager.MaxConcurrentCalls,
-                AutoComplete = _configManager.AutoComplete,
-            };
+            exeptionRecived = ValidateExceptionRecived(exeptionRecived);
+            CreateMessageHandlerOptions(exeptionRecived);
 
             Func<Microsoft.Azure.ServiceBus.Message, CancellationToken, Task> messageHandlerParam = async (message, cancellationToken) =>
             {
                 await ProcessMessagesGzipAsync<T>(message, cancellationToken, func);
             };
 
-            _subscriptionClient.RegisterMessageHandler(messageHandlerParam, messageHandlerOptions);
+            _subscriptionClient.RegisterMessageHandler(messageHandlerParam, _messageHandlerOptions);
 
         }
 
-        public async Task ProcessMessagesAsync<T>(Microsoft.Azure.ServiceBus.Message message, CancellationToken cancellationToken, Func<T, Task> task) where T : class
+        private async Task ProcessMessagesAsync<T>(Microsoft.Azure.ServiceBus.Message message, CancellationToken cancellationToken, Func<T, Task> task) where T : class
         {
             string messageBody = Encoding.UTF8.GetString(message.Body);
 
@@ -74,7 +70,7 @@ namespace Df.Message.Broker.ServiceBus.Standard
             await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken);
         }
 
-        public async Task ProcessMessagesGzipAsync<T>(Microsoft.Azure.ServiceBus.Message message, CancellationToken cancellationToken, Func<T, Task> task) where T : class
+        private async Task ProcessMessagesGzipAsync<T>(Microsoft.Azure.ServiceBus.Message message, CancellationToken cancellationToken, Func<T, Task> task) where T : class
         {
             Stream messageBodyStream = new MemoryStream(message.Body);
             string messageBody = DecompressionStream(messageBodyStream);
@@ -87,7 +83,7 @@ namespace Df.Message.Broker.ServiceBus.Standard
             await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken);
         }
 
-        static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+        private static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
             Console.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
@@ -96,7 +92,6 @@ namespace Df.Message.Broker.ServiceBus.Standard
             Console.WriteLine($"- Entity Path: {context.EntityPath}");
             Console.WriteLine($"- Executing Action: {context.Action}");
             return Task.CompletedTask;
-
         }
 
         private async Task CreateTopicSubscriptions()
@@ -108,11 +103,19 @@ namespace Df.Message.Broker.ServiceBus.Standard
                 await client.CreateSubscriptionAsync(new SubscriptionDescription(_configManager.TopicName, _subscriptionName));
                 return;
             }
-
             Console.WriteLine($"exists subscription: {_subscriptionName} in topic: { _configManager.TopicName}");
         }
 
-        public string DecompressionStream(Stream stream)
+        private void CreateMessageHandlerOptions(Func<ExceptionReceivedEventArgs, Task> exeptionRecived)
+        {
+            _messageHandlerOptions = new MessageHandlerOptions(exeptionRecived)
+            {
+                MaxConcurrentCalls = _configManager.MaxConcurrentCalls,
+                AutoComplete = _configManager.AutoComplete,
+            };
+        }
+
+        private string DecompressionStream(Stream stream)
         {
             string msgPayload;
 
@@ -125,6 +128,18 @@ namespace Df.Message.Broker.ServiceBus.Standard
             var messageBody = json.Property("Body").Value.ToString();
 
             return messageBody;
+        }
+
+        private Func<ExceptionReceivedEventArgs, Task> ValidateExceptionRecived(Func<ExceptionReceivedEventArgs, Task> exeptionRecived)
+        {
+            if (exeptionRecived == null)
+            {
+                exeptionRecived = async (exceptionReceivedEventArgs) =>
+                {
+                    await ExceptionReceivedHandler(exceptionReceivedEventArgs);
+                };
+            }
+            return exeptionRecived;
         }
     }
 }
