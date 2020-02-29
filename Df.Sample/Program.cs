@@ -22,8 +22,8 @@ namespace Df.Sample
 
         public static void Consume()
         {
-            IConsumer consumer = new ConsumerBuss(();
-            IConfigManager configManager = new ConfigManagerBuss((_serviceBusConnectionString, _topicName);
+            IConsumer consumer = new ConsumerBus();
+            IConfigManager configManager = new ConfigManagerBus(_serviceBusConnectionString, _topicName);
             consumer.Register(configManager);
             consumer.ReceiveMessages<Test>(async (test) => await ProcessEvent(test));
             Console.ReadKey();
@@ -38,8 +38,8 @@ namespace Df.Sample
         public static void Publisher()
         {
             Test test = new Test();
-            IConfigManager configManager = new ConfigManagerBuss((_serviceBusConnectionString, _topicName);
-            IPublisher publisher = new PublisherBuss(();
+            IConfigManager configManager = new ConfigManagerBus(_serviceBusConnectionString, _topicName);
+            IPublisher publisher = new PublisherBus();
             publisher.Register<Test>(configManager);
             publisher.SendMessagesAsync(test).GetAwaiter().GetResult();
             Console.WriteLine("Sended!");

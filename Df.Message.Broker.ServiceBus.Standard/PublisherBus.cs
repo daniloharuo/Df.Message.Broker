@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace Df.Message.Broker.ServiceBus.Standard
 {
-    public class PublisherBuss : IPublisher
+    public class PublisherBus : IPublisher
     {
         private static ITopicClient _topicClient;
         private IConfigManager _configManager;
         private Dictionary<Type, ITopicClient> _topicClients;
 
-        public PublisherBuss()
+        public PublisherBus()
         {
             _topicClients = new Dictionary<Type, ITopicClient>();
         }
