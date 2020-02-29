@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Df.Message.Broker.ServiceBus.Standard.Config
 {
-    public sealed class ConfigManagerBuss : IConfigManager
+    public sealed class ConfigManagerBus : IConfigManager
     {
-        public ConfigManagerBuss(
+        public ConfigManagerBus(
             string serviceBusConnectionString,
             string topicName,
             int maxConcurrentCalls = 1,
