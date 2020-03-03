@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Df.Message.Broker.ServiceBus.Standard
 {
-    public class ConsumerTopicBuss : IConsumer
+    public class ConsumerTopicBus : IConsumer
     {
         private static ISubscriptionClient _subscriptionClient;
         private IConfigManager _configManager;
@@ -139,7 +139,19 @@ namespace Df.Message.Broker.ServiceBus.Standard
                     await ExceptionReceivedHandler(exceptionReceivedEventArgs);
                 };
             }
-            return exeptionRecived;
+            //Todo: this return should be a func called;
+            return null;
         }
     }
+
+    public class ExceptionReceived 
+    {
+        public ExceptionReceivedEventArgs exceptionReceivedEventArgs {get;private set;}
+    }
+
+    public interface IExceptionReceived
+    {
+        ExceptionReceivedEventArgs exceptionReceivedEventArgs {get;}
+    }
+
 }
