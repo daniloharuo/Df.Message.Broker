@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Df.Message.Broker.Contracts
 {
-    public class IExceptionFlow
+    public interface IExceptionFlow
     {
-        public ExceptionReceivedEventArgs exceptionReceivedEventArgs { get;}
+        ExceptionReceivedEventArgs exceptionReceivedEventArgs { get;}
     }
 }

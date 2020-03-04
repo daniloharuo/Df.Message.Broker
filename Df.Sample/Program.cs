@@ -5,6 +5,8 @@ using Df.Message.Broker.ServiceBus.Standard.Config;
 using Df.Sample.Model;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Df.Sample
@@ -16,8 +18,16 @@ namespace Df.Sample
 
         static void Main(string[] args)
         {
-            Publisher();
-            Consume();
+
+
+            var _subscriptionName = Assembly.GetCallingAssembly().GetName().Name;
+            Console.WriteLine(_subscriptionName);
+            string topic = _subscriptionName.Replace('.', '/') + "/sandbox/event/" + _topicName;
+            Console.WriteLine(topic);
+
+
+            //Publisher();
+            //Consume();
         }
 
         public static void Consume()

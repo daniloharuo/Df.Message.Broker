@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Df.Message.Broker.ServiceBus.Standard
 {
-    public class ConsumerTopicBuss : IConsumer
+    public class ConsumerTopicBus : IConsumer
     {
         private static ISubscriptionClient _subscriptionClient;
         private IConfigManager _configManager;
