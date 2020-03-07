@@ -19,17 +19,23 @@ namespace Df.Message.Broker.ServiceBus.Standard
         private Dictionary<Type, ITopicClient> _topicClients;
         private const int _fiveRetryCount = 5;
         private const int _threeHundredSeconds = 300;
+        private string _topicName;
+        private string _deadLetterName;
+        private NamespaceManager _namespaceManager;
+        private QueueClient _queueClient;
 
         public PublisherBus()
         {
             _topicClients = new Dictionary<Type, ITopicClient>();
         }
 
-        public void Register<T>(IConfigManager configManager) where T : class
+        public async Task Register<T>(IConfigManager configManager) where T : class
         {
             _configManager = configManager;
-            CreateTopic();
-            _topicClient = new TopicClient(configManager.ServiceBusConnectionString, configManager.TopicName);
+            await CreateTopicAsync();
+
+            _topicClient = new TopicClient(configManager.ServiceBusConnectionString, _topicName);
+            _queueClient = new QueueClient(configManager.ServiceBusConnectionString, _deadLetterName);
 
             if (!_topicClients.ContainsKey(typeof(T)))
             {
@@ -39,48 +45,27 @@ namespace Df.Message.Broker.ServiceBus.Standard
         public async Task SendMessagesAsync<T>(T messageObject)
              where T : class
         {
-            try
-            {
-                ValidateRegister<T>();
+            ValidateRegister<T>();
 
-                string messageBody = JSON.SerializeDynamic(messageObject);
+            string messageBody = JSON.SerializeDynamic(messageObject);
 
-                Console.WriteLine($"Body message is: {messageBody}");
+            Console.WriteLine($"Body message is: {messageBody}");
 
-                var message = new Microsoft.Azure.ServiceBus.Message(Encoding.UTF8.GetBytes(messageBody));
+            var message = new Microsoft.Azure.ServiceBus.Message(Encoding.UTF8.GetBytes(messageBody));
 
-                var policy = Policy.Handle<Exception>()
-                   .WaitAndRetry(_fiveRetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
-                   {
-                      //Send message to dead 
-                   }
-               );
+            var policy = Policy.Handle<Exception>()
+                .WaitAndRetry(_fiveRetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                {
+                    _queueClient.SendAsync(message);
+                }
+            );
 
-                //var retry = Policy.Handle<Exception>()
-                //            .WaitAndRetry(_fiveRetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
-
-                //var circuitBreakerPolicy = Policy.Handle<Exception>().CircuitBreaker(3, TimeSpan.FromSeconds(15), onBreak: (ex, timespan, context) =>
-                //{
-                //    Console.WriteLine("Circuito entrou em estado de falha");
-                //}, onReset: (context) =>
-                //{
-                //    Console.WriteLine("Circuito saiu do estado de falha");
-                //});
-                //await retry.Execute(async () =>
-                //   await circuitBreakerPolicy.Execute(async () =>
-
-                //            await _topicClients[typeof(T)].SendAsync(message)
-                //));
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"{DateTime.Now} :: Exception: {ex.Message}");
-                throw ex;
-            }
+            await policy.Execute(async () =>
+                await _topicClients[typeof(T)].SendAsync(message)
+            );
         }
 
-        public void ValidateRegister<T>() where T : class
+        private void ValidateRegister<T>() where T : class
         {
             if (!_topicClients.ContainsKey(typeof(T)))
             {
@@ -88,20 +73,34 @@ namespace Df.Message.Broker.ServiceBus.Standard
             }
         }
 
-        public void CreateTopic()
+        private async Task CreateTopicAsync()
         {
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(_configManager.ServiceBusConnectionString);
+           _namespaceManager = NamespaceManager.CreateFromConnectionString(_configManager.ServiceBusConnectionString);
             var _subscriptionName = Assembly.GetCallingAssembly().GetName().Name;
-            string topic = _subscriptionName.Replace('.', '/') + _configManager.TopicName;
-
-            if (!namespaceManager.TopicExists(topic))
+            
+            _topicName = _subscriptionName.Replace('.', '/') + _configManager.TopicName;
+            await CreateDeadLetterQueueAsync();
+            if (!_namespaceManager.TopicExists(_topicName))
             {
-                namespaceManager.CreateTopic(_configManager.TopicName);
-                Console.WriteLine($"creating a topic:{ _configManager.TopicName}");
+                await _namespaceManager.CreateTopicAsync(_topicName);
+                Console.WriteLine($"creating a topic:{ _topicName}");
                 return;
             }
 
-            Console.WriteLine($"exists topic: { _configManager.TopicName}");
+            Console.WriteLine($"exists topic: {_topicName}");
+        }
+
+        private async Task CreateDeadLetterQueueAsync()
+        {
+            _deadLetterName = _topicName+ "_DL";
+
+            if (!_namespaceManager.QueueExists(_deadLetterName))
+            {
+                await _namespaceManager.CreateQueueAsync(_deadLetterName);
+                Console.WriteLine($"creating a dead letter queue:{ _deadLetterName}");
+                return;
+            }
+            Console.WriteLine($"exists dead letter queue: {_deadLetterName}");
         }
     }
 }

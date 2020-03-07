@@ -5,11 +5,12 @@ service_namespace='dfmessage',
 shared_access_key_name='meu_token',
 shared_access_key_value='+JWuf875RyazD1Cj8/ezM49LiPk08c+B0lm/I4nqx98=')
 
-topic_name= 'df.magalu.challenge'
-consumer_name = 'teste_python_bolado'
-
+# topic_name= 'df.magalu.challenge'
+# consumer_name = 'teste_python_bolado'
+topic_name= 'notifications/alerts/telegram/application_error_notification'
+consumer_name = 'telegram_publisher'
  
-for i in range(1):
+for i in range(100):
     msg = Message('nova Msg {0}'.format(i).encode('utf-8'),
     custom_properties={'messageposition': i})
     bus_service.send_topic_message(topic_name, msg)

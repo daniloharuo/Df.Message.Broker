@@ -5,7 +5,7 @@ namespace Df.Message.Broker.Contracts
 {
     public interface IPublisher
     {
-        void Register<T>(IConfigManager configManager)
+        Task Register<T>(IConfigManager configManager)
                    where T : class;
 
         Task SendMessagesAsync<T>(T messageObject)
